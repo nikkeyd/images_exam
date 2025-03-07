@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Image Color Picker</title>
+<style>
+body { font-family: sans-serif; } /* Устанавливаем шрифт по умолчанию */
+canvas { border: 1px solid black; } /* Рамка вокруг холста */
+#infoPanel { margin-top: 10px; padding: 10px; border: 1px solid #ccc; } /* Стиль информационной панели */
+</style>
+</head>
+<body>
+
+<h1>Image Color Picker</h1>
+
+<input type="file" id="imageUpload" accept="image/*"> <!-- Выбор файла изображения -->
+<input type="text" id="imageUrl" placeholder="Image URL"> <!-- Ввод URL изображения -->
+<button onclick="loadImage()">Load Image</button> <!-- Кнопка загрузки -->
+
+<br><br>
+
+<canvas id="myCanvas" width="500" height="400"></canvas> <!-- Холст для отображения изображения -->
+
+<div id="infoPanel"> <!-- Информационная панель -->
+  <p>Pixel Color: <span id="pixelColor"></span></p> <!-- Цвет пикселя -->
+  <p>Coordinates: <span id="coordinates"></span></p> <!-- Координаты пикселя -->
+  <p>Image Dimensions: <span id="imageDimensions"></span></p> <!-- Размеры изображения -->
+</div>
+
+<script>
+const canvas = document.getElementById('myCanvas');     // Получаем элемент canvas
+const ctx = canvas.getContext('2d');                   // Получаем 2D контекст для рисования
+const infoPanel = document.getElementById('infoPanel'); // Информационная панель
+const pixelColorSpan = document.getElementById('pixelColor'); // Элемент для вывода цвета
+const coordinatesSpan = document.getElementById('coordinates'); // Элемент для вывода координат
+const imageDimensionsSpan = document.getElementById('imageDimensions'); // Элемент для вывода размеров
+const imageUpload = document.getElementById('imageUpload'); // Элемент для загрузки файла
+const imageUrlInput = document.getElementById('imageUrl'); // Элемент для ввода URL
+
+function loadImage() { // Функция загрузки изображения
+  const imageUrl = imageUrlInput.value.trim() || imageUpload.files[0]; // Получаем URL или выбранный файл
+
+  if (!imageUrl) { // Проверка на наличие изображения
+    alert('Please select an image or provide a URL.');
+    return;
+  }
+
+  const img = new Image(); // Создаем объект Image
+  img.onload = function() { // Функция, вызываемая после загрузки изображения
+    canvas.width = img.width; // Устанавливаем ширину холста
+    canvas.height = img.height; // Устанавливаем высоту холста
+    ctx.drawImage(img, 0, 0); // Рисуем изображение на холсте
+    imageDimensionsSpan.textContent = `${img.width} x ${img.height}`; // Выводим размеры изображения
+
+    canvas.addEventListener('mousemove', getPixelColor); // Добавляем обработчик события mousemove
+  };
+
+  if(typeof imageUrl === 'string') { // Проверка типа imageUrl - строка или файл
+      img.src = imageUrl; // Устанавливаем src для URL
+  } else { // Обработка загруженного файла
+      const reader = new FileReader(); // Создаем объект FileReader
+      reader.onload = function(e) { // Обработчик события загрузки файла
+          img.src = e.target.result; // Устанавливаем src из файла
+      };
+      reader.readAsDataURL(imageUrl); // Читаем файл как DataURL
+  }
+}
+
+
+function getPixelColor(event) { // Функция получения цвета пикселя
+  const rect = canvas.getBoundingClientRect(); // Получаем координаты холста
+  const x = event.clientX - rect.left; // Координата x курсора на холсте
+  const y = event.clientY - rect.top; // Координата y курсора на холсте
+  const imageData = ctx.getImageData(x, y, 1, 1); // Получаем данные пикселя
+  const data = imageData.data; // Массив данных пикселя (RGBA)
+  const rgb = `rgb(${data[0]}, ${data[1]}, ${data[2]})`; // Формируем строку RGB
+  pixelColorSpan.textContent = rgb; // Выводим цвет
+  coordinatesSpan.textContent = `(${x}, ${y})`; // Выводим координаты
+}
+
+</script>
+
+</body>
+</html>
