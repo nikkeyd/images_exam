@@ -9,20 +9,108 @@
 <body>
     <div class="container">
         <h1>Image Color Picker</h1>
-        <!-- Поле для загрузки изображения с компьютера -->
-        <input type="file" id="imageInput" accept="image/*">
-        <!-- Поле для ввода URL изображения -->
-        <input type="text" id="imageUrlInput" placeholder="Введите URL изображения">
-        <button id="loadImageUrl">Загрузить по URL</button>
-        <!-- Холст для отображения изображения -->
-        <canvas id="imageCanvas"></canvas>
-        <!-- Информационная панель -->
-        <div id="infoPanel">
-            <p>Цвет: <span id="colorDisplay"></span></p>
-            <p>Координаты: <span id="coordinates"></span></p>
-            <p>Размер изображения: <span id="imageSize"></span></p>
+        <div class="toolbar">
+            <button id="handTool" title="Hand Tool (H)">Hand</button>
+            <button id="eyedropperTool" title="Eyedropper Tool (I)">Eyedropper</button>
+            <button id="curvesTool" title="Curves Tool (C)">Curves</button>
+            <button id="kernelTool" title="Kernel Filter (K)">Kernel Filter</button>
+        </div>
+        <div class="image-container">
+            <input type="file" id="imageInput" accept="image/*">
+            <input type="text" id="imageUrlInput" placeholder="Введите URL изображения">
+            <button id="loadImageUrl">Загрузить по URL</button>
+            <button id="openModal">Изменить размер</button>
+            <div class="canvas-container">
+                <canvas id="imageCanvas"></canvas>
+            </div>
+            <div id="infoPanel">
+                <p>Цвет: <span id="colorDisplay"></span></p>
+                <p>Координаты: <span id="coordinates"></span></p>
+                <p>Размер изображения: <span id="imageSize"></span></p>
+                <label for="scale">Масштаб:</label>
+                <input type="range" id="scale" min="12" max="300" value="100">
+            </div>
+            <button id="saveImage">Сохранить изображение</button>
         </div>
     </div>
+
+    <!-- Модальное окно для изменения размера -->
+    <dialog id="modal">
+        <form method="dialog">
+            <label for="width">Ширина:</label>
+            <input type="number" id="width">
+            <label for="height">Высота:</label>
+            <input type="number" id="height">
+            <label for="keepAspect">Сохранить пропорции:</label>
+            <input type="checkbox" id="keepAspect" checked>
+            <label for="interpolation">Алгоритм интерполяции:</label>
+            <select id="interpolation">
+                <option value="nearest">Ближайший сосед</option>
+            </select>
+            <button type="submit">Применить</button>
+            <button type="button" id="cancel">Отмена</button>
+        </form>
+    </dialog>
+
+    <!-- Модальное окно для коррекции "Кривые" -->
+    <dialog id="curvesModal">
+        <form method="dialog">
+            <h3>Коррекция "Кривые"</h3>
+            <div id="histogramContainer">
+                <svg id="histogram" width="300" height="300"></svg>
+            </div>
+            <div>
+                <label for="input1">Входное значение 1:</label>
+                <input type="number" id="input1" min="0" max="255" value="0">
+                <label for="output1">Выходное значение 1:</label>
+                <input type="number" id="output1" min="0" max="255" value="0">
+            </div>
+            <div>
+                <label for="input2">Входное значение 2:</label>
+                <input type="number" id="input2" min="0" max="255" value="255">
+                <label for="output2">Выходное значение 2:</label>
+                <input type="number" id="output2" min="0" max="255" value="255">
+            </div>
+            <label>
+                <input type="checkbox" id="previewCheckbox"> Предпросмотр
+            </label>
+            <button type="button" id="applyCurves">Применить</button>
+            <button type="button" id="resetCurves">Сбросить</button>
+            <button type="button" id="closeCurvesModal">Закрыть</button>
+        </form>
+    </dialog>
+
+    <!-- Модальное окно для фильтрации с использованием ядер -->
+    <dialog id="kernelModal">
+        <form method="dialog">
+            <h3>Фильтрация с использованием ядер</h3>
+            <label for="kernelPreset">Преднастроенные значения:</label>
+            <select id="kernelPreset">
+                <option value="identity">Тождественное отображение</option>
+                <option value="sharpen">Повышение резкости</option>
+                <option value="gaussian">Фильтр Гаусса (3x3)</option>
+                <option value="boxBlur">Прямоугольное размытие</option>
+            </select>
+            <div id="kernelInputs">
+                <input type="number" class="kernelInput" value="0">
+                <input type="number" class="kernelInput" value="0">
+                <input type="number" class="kernelInput" value="0">
+                <input type="number" class="kernelInput" value="0">
+                <input type="number" class="kernelInput" value="1">
+                <input type="number" class="kernelInput" value="0">
+                <input type="number" class="kernelInput" value="0">
+                <input type="number" class="kernelInput" value="0">
+                <input type="number" class="kernelInput" value="0">
+            </div>
+            <label>
+                <input type="checkbox" id="previewKernelCheckbox"> Предпросмотр
+            </label>
+            <button type="button" id="applyKernel">Применить</button>
+            <button type="button" id="resetKernel">Сбросить</button>
+            <button type="button" id="closeKernelModal">Закрыть</button>
+        </form>
+    </dialog>
+
     <script src="script.js"></script>
 </body>
 </html>
